@@ -1,12 +1,57 @@
-import datetime as dt
-from application.salary import calculate_salary as cal_sal
-from application.people import get_employees as get_empl
+import re
+from pprint import pprint
+# читаем адресную книгу в формате CSV в список contacts_list
+import csv
+with open("phonebook_raw.csv") as f:
+  rows = csv.reader(f, delimiter=",")
+  contacts_list = list(rows)
+# pprint(contacts_list)
+result=[]
+pattern_1 = r'^(\w+)(\s|,)(\w+)(\s|,)(\w+)?,,?,?'
+pattern_2 = r'(\+7|8)(\s)?(\()?(\d{1,3})(\))?(\s|-)?(\d{3})(\s|-)?(\d{2})(\s|-)?(\d{2})(\s)?(\()?(доб)?(\.)?(\s)?(\d+)?(\))?'
+result.append(contacts_list[0])
+result.append(contacts_list[1])
 
 
 
-if __name__ == '__main__':
-    print(dt.datetime.now())
-    cal_sal()
-    get_empl()
+def CheckName(list_res):
+    Check_lastname = list_res[0]
+    Check_firstname = list_res[1]
+    ret_res = 'not'
+    for i in result[1:]:
+        if i[0] == Check_lastname and i[1] == Check_firstname:
+            ret_res = 'yes'
+    return ret_res
+
+def AddDubs(list_res, result):
+    Check_lastname = list_res[0]
+    Check_firstname = list_res[1]
+    numb=2
+    for i in result[1:]:
+        if i[0] == Check_lastname and i[1] == Check_firstname:
+            while numb <=6:
+                if len(i[numb])>0 or (len(i[numb])==0 and len(list_res[numb])==0):
+                    pass
+                else:
+                    i[numb]=list_res[numb]
+                numb+=1
+    return result
+        
+
+for i in contacts_list[2:]:
+    item = ','.join(i)
+    item = res=re.sub(pattern_1, r'\1,\3,\5,', item)
+    res=re.sub(pattern_2, r'+7(\4) \7-\9-\g<11> \g<14>\g<15> \g<17>', item)
+    res = res.split(',')
     
+    if CheckName(res)=='not':
+        result.append(res)
+    else:
+        AddDubs(res,result)
+  
+# pprint(result)
     
+with open("phonebook.csv", "w") as f:
+  datawriter = csv.writer(f, delimiter=',')
+  # Вместо contacts_list подставьте свой список
+  datawriter.writerows(result)
