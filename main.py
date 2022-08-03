@@ -42,9 +42,9 @@ for i in contacts_list[2:]:
     item = ','.join(i)
     item = res=re.sub(pattern_1, r'\1,\3,\5,\6,\7,\8,\9', item)
     res=re.sub(pattern_2, r'+7(\4) \7-\9-\g<11> \g<14>\g<15> \g<17>', item)
-    print('item', item)
+    #print('item', item)
     res = res.split(',')
-    print('res', res)
+    #print('res', res)
     
     if CheckName(res)=='not':
         result.append(res)
